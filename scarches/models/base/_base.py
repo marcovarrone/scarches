@@ -141,6 +141,7 @@ class BaseMixin:
         cls,
         dir_path: str,
         adata: Optional[AnnData] = None,
+        map_location: Optional[str] = None
     ):
         """Instantiate a model from the saved output.
            Parameters
@@ -150,6 +151,8 @@ class BaseMixin:
            adata
                 AnnData object.
                 If None, will check for and load anndata saved with the model.
+           map_location
+                Location where all tensors should be loaded (e.g., `torch.device('cpu')`)
            Returns
            -------
                 Model with loaded state dictionaries.
@@ -163,7 +166,7 @@ class BaseMixin:
         elif not os.path.exists(adata_path) and load_adata:
             raise ValueError("Save path contains no saved anndata and no adata was passed.")
 
-        attr_dict, model_state_dict, var_names = cls._load_params(dir_path)
+        attr_dict, model_state_dict, var_names = cls._load_params(dir_path, map_location=map_location)
 
         # Overwrite adata with new genes
         adata = _validate_var_names(adata, var_names)
